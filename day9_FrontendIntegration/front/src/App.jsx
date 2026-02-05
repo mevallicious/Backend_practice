@@ -12,7 +12,7 @@ const App = () => {
 
 
 const fetchNotes=()=>{
-  axios.get("http://localhost:3000/api/notes")
+  axios.get("https://todo-up.onrender.com//api/notes")
   .then((res)=>{
     setNotes(res.data.notes)
   }) 
@@ -26,7 +26,7 @@ const fetchNotes=()=>{
       console.log("submitted")
       console.log(title.value,description.value)
 
-      axios.post("http://localhost:3000/api/notes",{
+      axios.post("https://todo-up.onrender.com/api/notes",{
         title:title.value,
         description:description.value
       })
@@ -39,7 +39,7 @@ const fetchNotes=()=>{
 
   function deleteHandlerNotes(noteId){
     console.log("submitted")
-    axios.delete(`http://localhost:3000/api/notes/${noteId}`)
+    axios.delete(`https://todo-up.onrender.com/api/notes/${noteId}`)
     .then((res)=>{
       console.log(res.data)
       fetchNotes()
@@ -49,7 +49,7 @@ const fetchNotes=()=>{
   function handleUpdateNote(noteId) {
   const newDescription = prompt("Enter new description");
     console.log("submitted")
-  axios.patch(`http://localhost:3000/api/notes/${noteId}` ,
+  axios.patch(`https://todo-up.onrender.com/api/notes/${noteId}` ,
     { description: newDescription }
   )
   .then((res) => {
