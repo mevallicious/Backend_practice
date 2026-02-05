@@ -18,6 +18,7 @@ html{
   display: flex;
   gap: 1rem;
   padding: 1rem;
+  
 }
 
 .note{
@@ -51,5 +52,21 @@ html{
   border: none;
   outline: none;
   background: linear-gradient(to bottom, rgb(49, 211, 49),rgb(37, 161, 37));
+}
+
+.note .button-div{
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.button-div button{
+  padding: 5px;
+  font-size: 15px;  
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  background: linear-gradient(to bottom, rgb(231, 7, 7),rgb(129, 9, 5));
+
 }
 

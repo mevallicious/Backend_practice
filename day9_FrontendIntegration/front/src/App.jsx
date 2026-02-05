@@ -38,12 +38,25 @@ const fetchNotes=()=>{
   }
 
   function deleteHandlerNotes(noteId){
+    console.log("submitted")
     axios.delete(`http://localhost:3000/api/notes/${noteId}`)
     .then((res)=>{
       console.log(res.data)
       fetchNotes()
     })
   }
+
+  function handleUpdateNote(noteId) {
+  const newDescription = prompt("Enter new description");
+    console.log("submitted")
+  axios.patch(`http://localhost:3000/api/notes/${noteId}` ,
+    { description: newDescription }
+  )
+  .then((res) => {
+    console.log(res.data);
+    fetchNotes();
+  });
+}
 
   useEffect(()=>{
     fetchNotes()
@@ -64,7 +77,10 @@ const fetchNotes=()=>{
           return  <div key={idx} className="note">
                     <h1>{note.title}</h1>
                     <p>{note.description}</p>
-                    <button onClick={()=>{deleteHandlerNotes(note._id)}}>Delete</button>
+                      <div className="button-div">
+                        <button className='delete-btn' onClick={()=>{deleteHandlerNotes(note._id)}}>Delete</button>
+                        <button className='update-btn' onClick={()=>{handleUpdateNote(note._id)}}>Update</button>
+                      </div>
                   </div>
         })}
       </div>

@@ -73,6 +73,10 @@ app.patch("/api/notes/:id",async (req,res)=>{
     const {description} = req.body
 
     const note = await noteModel.findByIdAndUpdate(id,{description})
+
+    res.status(200).json({
+    message: "Note updated successfully.",
+  });
 })
 
 
