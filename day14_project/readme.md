@@ -1,0 +1,17 @@
+** FEATURES **
+
+==> Authentication
+    =>register (1. user ka data save krna ,2. token user ko dena)
+    =>login
+    =>logout (token blacklisting)
+    =>[OTP based registration]
+
+==> POST 
+    => create
+    => can see the feed 
+    => like posts (collection types)
+    => save post
+
+==> USERS
+    => follower
+    =>following
