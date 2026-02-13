@@ -116,6 +116,8 @@ async function loginController(req,res){
         {expiresIn:"1d"}
     )
 
+    res.cookie("jwt_token",token)
+
     res.status(200).json({
         message:"user logged in succesfully",
         user:{
@@ -123,7 +125,8 @@ async function loginController(req,res){
             email:user.email,
             bio:user.bio,
             profileImage:user.profileImage
-        }
+        },
+        token
     })
 }
 
