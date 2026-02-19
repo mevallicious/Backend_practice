@@ -5,22 +5,6 @@ const bcrypt =require("bcryptjs")
 async function registerController(req,res){
     const {username,email,profileImage,bio,password} = req.body
 
-    // const isUserExistsByEmail = await userModel.findOne({email})
-    
-    // if(isUserExistsByEmail){
-    //     return res.status(409).json({
-    //         message:"user already exist with same email"
-    //     })
-    // }
-
-    // const isUserExistsByUsername = await userModel.findOne({ username })
-
-    // if(isUserExistsByUsername){
-    //     return res.status(409).json({
-    //         message:"user already exist with same username"
-    //     })
-    // }
-
     const isUserAlreadyExists = await userModel.findOne({
         $or: [ //or operator me 2 condition deni padti hai in an array
             {username},
@@ -81,17 +65,12 @@ async function loginController(req,res){
     */
     
     const user = await userModel.findOne({
-        /*
-        * {username:a,email:undefined,password:123}
-        * matlab jab hum username a daale toh emil undefined rahegav and aisa koi email ni hoga joh undefined hai toh voh false hojayega and phir voh user ko on the basis of username dhund lega and vice versa agar username nahi diya ho and email diya ho 
-        */
+        
         $or:[
             {
-                /**  condition 1 */
                 username:username
             },
             {
-                /**  condition 2 */
                 email:email
             },
         ]

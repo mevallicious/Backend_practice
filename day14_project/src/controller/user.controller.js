@@ -35,12 +35,13 @@ async function followUserController(req,res){
 
     const followRecord =await followModel.create({
         follower:followerUsername,
-        followee:followeeUsername
+        followee:followeeUsername,
+        status:"pending"
     })
 
 
     res.status(201).json({
-        message:`you are now following ${followeeUsername}`,
+        message:`follow request${followeeUsername}`,
         follow:followRecord
     })
 }

@@ -1,6 +1,6 @@
-const mongoose = require("mongoose")
+const mongoose =require("mongoose")
 
-const followSchema = mongoose.Schema({
+const followSchema =mongoose.Schema({
     follower:{
         type:String
     },
@@ -16,12 +16,13 @@ const followSchema = mongoose.Schema({
         }
     }
 },
-{
-    timestamps:true
-})
+    {
+        timestamps:true
+    }
+)
 
-followSchema.index({ follower:1 , followee:1 },{ unique:true })
+followSchema.index({follower:1 ,followee:1},{unique:true})
 
-const followModel = mongoose.model("follows",followSchema)
+const followModel =mongoose.model("follow",followSchema)
 
 module.exports =followModel

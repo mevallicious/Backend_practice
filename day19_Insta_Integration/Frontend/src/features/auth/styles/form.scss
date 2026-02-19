@@ -1,0 +1,174 @@
+/* center page */
+main {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0b0b14;
+  overflow: hidden;
+}
+
+/* glow blobs */
+main::before,
+main::after {
+  content: "";
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  filter: blur(120px);
+  opacity: 0.6;
+  z-index: 0;
+}
+
+main::before {
+  background: #a855f7;
+  top: -100px;
+  left: -120px;
+}
+
+main::after {
+  background: #f43f5e;
+  bottom: -120px;
+  right: -120px;
+}
+
+/* container */
+.form-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+}
+
+/* -------- FORM CARD -------- */
+.form-container form {
+  backdrop-filter: blur(18px);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  padding: 42px 34px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  box-shadow:
+    0 0 40px rgba(168, 85, 247, 0.18),
+    0 0 60px rgba(244, 63, 94, 0.12);
+
+  animation: cardAppear 0.5s ease;
+}
+
+/* title */
+.form-container form h1 {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+/* inputs */
+.form-container form input {
+  padding: 13px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+  transition: 0.25s ease;
+}
+
+.form-container form input::placeholder {
+  color: #c4c4c4;
+}
+
+.form-container form input:focus {
+  border-color: #a855f7;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 0 0 2px rgba(168, 85, 247, 0.35),
+    0 0 18px rgba(244, 63, 94, 0.25);
+}
+
+/* button */
+.form-container form button {
+  margin-top: 10px;
+  padding: 13px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+
+  background: linear-gradient(135deg, #a855f7, #f43f5e);
+  transition: 0.25s ease;
+
+  box-shadow: 0 8px 25px rgba(168, 85, 247, 0.35);
+}
+
+.form-container form button:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 12px 35px rgba(168, 85, 247, 0.45),
+    0 6px 20px rgba(244, 63, 94, 0.35);
+}
+
+.form-container form button:active {
+  transform: scale(0.98);
+}
+
+/* -------- LOGIN TEXT -------- */
+.form-container p {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 14px;
+  color: #cfcfe8;
+  letter-spacing: 0.3px;
+}
+
+/* this styles the React Router Link */
+.form-container p a {
+  margin-left: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+
+  background: linear-gradient(135deg, #a855f7, #f43f5e);
+  -webkit-text-fill-color: transparent;
+  transition: 0.25s ease;
+}
+
+/* animated underline */
+.form-container p a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(135deg, #a855f7, #f43f5e);
+  transition: width 0.25s ease;
+}
+
+.form-container p a:hover::after {
+  width: 100%;
+}
+
+/* animation */
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
