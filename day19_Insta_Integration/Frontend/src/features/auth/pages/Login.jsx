@@ -35,16 +35,18 @@ const Login = () => {
             <form onSubmit={handleSubmit}>
                 <h1>Login</h1>
                 <input 
+                    required
                     value={username}
                     onInput={(e)=>{setUsername(e.target.value)}}
                     type="text" 
                     placeholder='enter name'/>
-                <input  
+                <input 
+                    required
                     value={password}
                     onInput={(e)=>{setPassword(e.target.value)}}
                     type="password" 
                     placeholder='enter name' />
-                <button>Login</button>
+                <button className='button primary-button'>Login</button>
             </form>
                 <p>Already have an account? <Link to={"/register"}>Register</Link></p>
         </div>

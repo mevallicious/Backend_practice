@@ -93,10 +93,32 @@ async function likePostController(req,res){
         })
 }
 
+async function getFeedController(req,res){
+    const posts = await Promise.all((await postModel.find().populate("user").lean())  //populate help karta hai to ind the all data of the user only eith thr user id (but for that we need to have the reference of the user schema in the post schema) 
+        .map(async (post) =>{                                                       // lean kya k arti haia ki joh mongoose object aate hai usko regular object bana deti hai 
+
+            const isLiked =await likeModel.findOne({
+                user:req.user.username,
+                post:post._id   
+            })
+
+            post.isLiked = !!isLiked
+
+            return post
+        }))    // Promise.all => yeh kya karta hai ki joh map hai voh async ke help se jitne bhi promise create karta hai un saare promises ko resolve karta hai 
+
+
+    res.status(200).json({
+        message:"posts fetched successfully",
+        posts
+    })
+}
+
 
 module.exports = {
     createPostController,
     getPostController,
     getPostDetailsController,
-    likePostController
+    likePostController,
+    getFeedController
 }
