@@ -6,7 +6,7 @@ const postSchema =mongoose.Schema({
         default:"",
         required:true
     },
-    imgURL:{
+    imgUrl:{
         type:String,
         required:true
     },

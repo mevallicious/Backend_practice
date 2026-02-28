@@ -19,7 +19,7 @@ async function createPostController(req,res){
 
     const post =await postModel.create({
         caption :req.body.caption,
-        imageURL:file.url,
+        imgUrl:file.url,
         user:req.user.id //from middleware
     })
 
@@ -39,7 +39,7 @@ async function getPostController(req,res){
 
     res.status(200).json({
         message:"post fetched succesfully",
-        posts
+        postId
     })
 }
 
@@ -87,14 +87,36 @@ async function likePostController(req,res){
         post:postId
     })
 
-    res.status(200).json({
+    return res.status(200).json({
             message:"post liked successfully",
             like
         })
 }
 
+async function unLikePostController(req,res){
+    const username=req.user.username
+    const postId =req.params.postId
+
+    const isLiked = await likeModel.findOne({
+        post:postId,
+        user:username
+    })
+
+    if(!isLiked){
+        return res.status(400).json({
+            message:"post didnt liked"
+        })
+    }
+
+    await likeModel.findOneAndDelete({_id: isLiked._id})
+
+    return res.status(200).json({
+            message:"post unliked successfully",
+        })
+}
+
 async function getFeedController(req,res){
-    const posts = await Promise.all((await postModel.find().populate("user").lean())  //populate help karta hai to ind the all data of the user only eith thr user id (but for that we need to have the reference of the user schema in the post schema) 
+    const posts = await Promise.all((await postModel.find().sort({_id:-1}).populate("user").lean())  //populate help karta hai to ind the all data of the user only eith thr user id (but for that we need to have the reference of the user schema in the post schema) 
         .map(async (post) =>{                                                       // lean kya k arti haia ki joh mongoose object aate hai usko regular object bana deti hai 
 
             const isLiked =await likeModel.findOne({
@@ -120,5 +142,6 @@ module.exports = {
     getPostController,
     getPostDetailsController,
     likePostController,
-    getFeedController
+    getFeedController,
+    unLikePostController
 }
