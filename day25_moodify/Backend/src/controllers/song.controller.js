@@ -1,0 +1,53 @@
+const songModel = require("../model/song.model")
+const storageService = require("../services/storage.service")
+const id3 = require("node-id3")  // ek file ke andar sirf song nahi hota balki uska poster hot hai song name hota hai artist name etc
+// file ke adar joh details hoti hai unko extract karne ka kaam hai nodeid3 ka 
+
+async function uploadSong(req,res){
+
+    songBuffer =req.file.buffer
+    const {mood} =req.body
+    
+    const tags = id3.read(songBuffer)    //it ask for the fileBuffer
+
+    const [songFile,posterFile]  =await Promise.all([
+        storageService.uploadFile({
+            buffer:songBuffer,
+            fileName:tags.title + ".mp3",
+            folder:"/cohort-2/moodify/songs"
+        }),
+        storageService.uploadFile({
+            buffer:tags.image.imageBuffer,
+            fileName:tags.title + ".jpeg",
+            folder:"/cohort-2/moodify/posters"
+        }),
+    ])
+
+    const song =await songModel.create({
+        title:tags.title,
+        songUrl:songFile.url,
+        posterUrl:posterFile.url,
+        mood
+    })
+
+    res.status(201).json({
+        message:"song uploaded successfully",
+        song
+    })
+}
+
+async function getSong(req,res){
+    const {mood}=req.query
+
+    const song = await songModel.findOne({mood})
+
+    res.status(200).json({
+        message:"song fetched successfully",
+        song
+    })
+}
+
+module.exports={
+    uploadSong,
+    getSong
+}
