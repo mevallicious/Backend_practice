@@ -1,3 +1,12 @@
+UI => Ui dikhana and navigation handle karna (pages,components)
+
+Hooks => State and Api mangae karna (hooks)
+
+State => Data ko store karna (context.jsx,redux)
+
+API => to communicate with backend (services)
+
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
