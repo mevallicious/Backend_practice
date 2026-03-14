@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
 import { init,detect } from "../utils/utils";
 
@@ -18,7 +19,6 @@ export default function FaceExpression({ onClick = () => {} }) {
                 landmarkerRef.current.close();
             }
             if (videoRef.current?.srcObject) {
-                // eslint-disable-next-line react-hooks/exhaustive-deps
                 videoRef.current.srcObject
                 .getTracks()
                 .forEach((track) => track.stop());
@@ -37,7 +37,7 @@ export default function FaceExpression({ onClick = () => {} }) {
         <div style={{ textAlign: "center" }}>
             <video
                 ref={videoRef}
-                style={{ width: "400px", borderRadius: "12px" }}
+                style={{ width: "700px", borderRadius: "12px" }}
                 playsInline
             />
             <h2>{expression}</h2>

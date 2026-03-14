@@ -1,3 +1,4 @@
+
 import React,{ useState } from 'react'
 import "../styles/login.scss"
 import FormGroup from '../components/FormGroup'
@@ -10,7 +11,7 @@ const Login = () => {
 
     const navigate =useNavigate()
 
-    const {handleLogin,loading} = useAuth()
+    const {handleLogin} = useAuth()
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
