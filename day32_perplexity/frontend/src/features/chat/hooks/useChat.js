@@ -57,24 +57,25 @@ export const useChat = () => {
         dispatch(setLoading(false))
     }
 
-    async function handleOpenChat(chatId,chats) {
+    async function handleOpenChat(chatId, chats) {
 
-        if(chats[ chatId ]?.messages.length === 0){
-            const data = await getMessages(chatId)
-            const { messages } = data
+    dispatch(setCurrentChatId(chatId)) // set first (better UX)
 
-            const formattedMessages = messages.map(msg => ({
-                content: msg.content,
-                role: msg.role,
-            }))
+    if (!chats[chatId]?.messages || chats[chatId].messages.length === 0) {
+        const data = await getMessages(chatId)
+        const { messages } = data
 
-            dispatch(addMessages({
-                chatId,
-                messages: formattedMessages,
-            }))
-        }
-            dispatch(setCurrentChatId(chatId))
+        const formattedMessages = messages.map(msg => ({
+            content: msg.content,
+            role: msg.role,
+        }))
+
+        dispatch(addMessages({
+            chatId,
+            messages: formattedMessages,
+        }))
     }
+}
 
     async function handleDeleteChat(chatId) {
         try {
