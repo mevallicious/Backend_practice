@@ -1,5 +1,6 @@
 import express from "express"
-import useGraph from "./services/graph.ai.service.js"
+import runGraph from "./services/graph.ai.service"
+
 
 const app =express()
 
@@ -7,13 +8,11 @@ app.get('/health',(req,res)=>{
     res.status(200).json({status:'ok'})
 })
 
-app.post("/use-graph", async (req, res) => {
-    try {
-        const result = await useGraph("Who is the captain of Sunrisers Hyderabad");
-        res.status(200).json(result);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+app.get("/", async (req, res) => {
+   
+    const result = await runGraph("Write an article for developers in F1 racing")
+    res.status(200).json(result)
+
 })
 
 export default app

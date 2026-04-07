@@ -12,7 +12,6 @@ export const mistralModel = new ChatMistralAI({
     model:"mistral-large-latest",
     apiKey:config.MISTRAL_API_KEY.trim()
 })
-console.log("Mistral Key Check:", config.MISTRAL_API_KEY.substring(0, 5) + "...")
 
 export const cohereModel = new ChatCohere({
     model:"command-a-03-2025",
