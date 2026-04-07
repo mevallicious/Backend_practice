@@ -11,11 +11,11 @@ const imagekit = new ImageKit({
 
 async function createPostController(req,res){   
     
-    const file = await imagekit.files.upload({
-        file :await toFile(Buffer.from(req.file.buffer),'file'),
-        fileName:"Title",
-        folder:"cohort-2-instaclone-posts"
-    })
+        const file = await imagekit.files.upload({
+            file :await toFile(Buffer.from(req.file.buffer),'file'),
+            fileName:"Title",
+            folder:"cohort-2-instaclone-posts"
+        })
 
     const post =await postModel.create({
         caption :req.body.caption,
