@@ -72,7 +72,7 @@ const judgeNode:GraphNode<typeof state> = async (state)=>{
             solution_2_score,
             solution_1_reasoning,
             solution_2_reasoning
-        }ioz
+        }
     }
 }
 
