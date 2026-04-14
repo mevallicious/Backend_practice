@@ -192,6 +192,10 @@ const Register = () => {
                  </p>
               </div>
 
+              <a href="/api/auth/google">
+                  Continue with Google
+              </a>
+
             </form>
           </div>
         </div>
