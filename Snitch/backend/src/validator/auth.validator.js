@@ -2,7 +2,7 @@ import {body, validationResult} from 'express-validator'
 
 
 function validateRequest(req,res,next){
-    const errors =validateRequest(req);
+    const errors = validationResult(req);
     if(!errors.isEmpty()){
         return res.status(400).json({
             errors:errors.array()
@@ -25,5 +25,13 @@ export const validateRegisterUser =[
     body("isSeller")
         .isBoolean().withMessage("isSeller must be a boolean value"),
 
+    validateRequest
+]
+
+export const validateLoginUser =[
+    body('email')
+        .isEmail().withMessage('invalid email format'),
+    body('password')
+        .notEmpty().withMessage("Password is required"),
     validateRequest
 ]

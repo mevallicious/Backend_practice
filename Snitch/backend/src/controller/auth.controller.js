@@ -1,8 +1,8 @@
-import userModel from "../model/user.model";
+import userModel from "../model/user.model.js";
 import jwt from "jsonwebtoken"
+import { config } from "../config/config.js";
 
-
-async function sendTokenResponse(){
+async function sendTokenResponse(user, res, message){
     const token =jwt.sign({
         id:user._id,
     },config.JWT_SECRET,{
@@ -51,4 +51,22 @@ export const register = async(req,res)=>{
         console.log(err)
         return  res.status(500).json({ message:"Server error" })
     }
+}
+
+export const login = async(req,res)=>{
+    const {email,password} = req.body
+
+    const user = await userModel.findOne({email}).select("+password")
+
+    if(!user){
+        return res.status(400).json({message:"Invalid credentials"})
+    }
+
+    const isMatch = await user.comparePassword(password)
+
+    if(!isMatch){
+        return res.status(400).json({message:"Invalid credentials"})
+    }
+
+    await sendTokenResponse(user,res,"User logged in successfully")
 }
