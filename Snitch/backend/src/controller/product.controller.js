@@ -1,0 +1,33 @@
+import productModel from "../model/product.model.js";
+import ImageKit from "@imagekit/nodejs";
+import { uploadFile } from "../service/storage.service.js";
+
+export async function createProduct(req,res){
+
+    const {title, priceAmount, priceCurrency, description} = req.body 
+    const seller = req.user;
+
+    const images = await Promise.all(req.files.map(async (file)=>{
+        return await uploadFile({
+            buffer:file.buffer,
+            fileName:file.originalname
+        })
+    }))
+
+    const product = await productModel.create({
+        title,
+        description,
+        price:{
+            amount:priceAmount,
+            currency:priceCurrency || 'INR'
+        },
+        images,
+        seller:seller._id
+    })
+
+    res.status(201).json({
+        message:"product created successfully",
+        success:true,
+        product
+    })
+}

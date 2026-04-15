@@ -18,7 +18,7 @@ const Login = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0e0e0e] text-white font-sans selection:bg-[#39FF14] selection:text-black">
       {/* Container - Ample Breathing Space */}
-      <div className="flex w-full max-w-[1240px] flex-col md:flex-row rounded-3xl overflow-hidden bg-[#131313] mx-4 shadow-2xl shadow-black/80 my-8">
+      <div className="flex w-full max-w-310 flex-col md:flex-row rounded-3xl overflow-hidden bg-[#131313] mx-4 shadow-2xl shadow-black/80 my-8">
         
         {/* Left Decorative Image Panel */}
         <div className="relative hidden w-full md:block md:w-5/12 lg:w-1/2 p-12 lg:p-16 overflow-hidden bg-[#0a0a0a]">
@@ -118,9 +118,9 @@ const Login = () => {
 
               {/* Divider */}
               <div className="relative flex items-center justify-center pt-2">
-                <div className="flex-grow border-t border-gray-800"></div>
-                <span className="flex-shrink-0 px-4 text-xs text-gray-500 uppercase tracking-widest">or</span>
-                <div className="flex-grow border-t border-gray-800"></div>
+                <div className="grow border-t border-gray-800"></div>
+                <span className="shrink-0 px-4 text-xs text-gray-500 uppercase tracking-widest">or</span>
+                <div className="grow border-t border-gray-800"></div>
               </div>
 
               {/* Google Continue Button */}
