@@ -14,3 +14,8 @@ export const loginUser = async ({email,password}) => {
     const response = await authApiInstance.post("/login",{email,password})
     return response.data
 }
+
+export const getUser = async()=>{
+    const response = await authApiInstance.get("/me")
+    return response.data
+}

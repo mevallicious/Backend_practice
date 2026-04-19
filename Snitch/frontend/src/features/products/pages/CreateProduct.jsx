@@ -75,7 +75,7 @@ const CreateProduct = () => {
         )}
 
         {/* Header Section */}
-        <div className="mb-10 text-center md:text-left flex-shrink-0">
+        <div className="mb-10 text-center md:text-left shrink-0">
           <h1 className="text-3xl font-extrabold tracking-tight uppercase">
             Create Product
           </h1>
@@ -119,7 +119,7 @@ const CreateProduct = () => {
                   value={formData.description}
                   onChange={handleChange}
                   required
-                  className="w-full bg-transparent border-b border-gray-200 py-3 text-base placeholder-gray-300 outline-none transition-colors focus:border-black resize-y min-h-[120px] rounded-none"
+                  className="w-full bg-transparent border-b border-gray-200 py-3 text-base placeholder-gray-300 outline-none transition-colors focus:border-black resize-y min-h-30 rounded-none"
                   placeholder="Detailed product materials, fit, and care instructions..."
                 />
               </div>
@@ -197,7 +197,7 @@ const CreateProduct = () => {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {/* Render selected image previews */}
               {images.map((imgObj, idx) => (
-                <div key={idx} className="group relative aspect-[4/5] bg-gray-100 overflow-hidden border border-gray-200">
+                <div key={idx} className="group relative aspect-4/5 bg-gray-100 overflow-hidden border border-gray-200">
                   <img 
                     src={imgObj.previewUrl} 
                     alt={`Preview ${idx + 1}`} 
@@ -221,7 +221,7 @@ const CreateProduct = () => {
 
               {/* Upload Button Box - only show if under 7 images */}
               {images.length < 7 && (
-                <label className="aspect-[4/5] cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-gray-200 bg-gray-50 flex-shrink-0 hover:bg-gray-100 hover:border-black/30 transition-colors group">
+                <label className="aspect-4/5 cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-gray-200 bg-gray-50 shrink-0 hover:bg-gray-100 hover:border-black/30 transition-colors group">
                   <div className="bg-white p-3 rounded-full shadow-sm text-gray-400 group-hover:text-black transition-colors mb-3">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />

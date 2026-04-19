@@ -36,15 +36,13 @@ export const useProducts = () => {
 
     async function handleGetSellerProduct() {
         try {
-            dispatch(setLoading(true));
             const data = await getSellerProducts();
             dispatch(setSellerProducts(data.products));
             return data.products;
         } catch (error) {
-            dispatch(setError("Failed to fetch products"));
-        } finally {
-            dispatch(setLoading(false));
-        }
+            dispatch(setError("Failed to fetch products",error));
+        } 
+
     }
 
     return { handleCreateProduct, handleGetSellerProduct };

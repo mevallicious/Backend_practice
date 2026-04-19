@@ -11,8 +11,9 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await handleLogin({ email, password });
-    navigate('/');
+    const user = await handleLogin({ email, password });
+    if(user.role =="buyer") navigate('/');
+    else if(user.role =="seller") navigate("/seller/dashboard")
   };
 
   return (
@@ -29,9 +30,9 @@ const Login = () => {
             className="absolute inset-0 w-full h-full object-cover"
           />
           {/* Top gradient for brand readability */}
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/50 to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-black/50 to-transparent" />
           {/* Bottom gradient for headline readability */}
-          <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-48 bg-linear-to-t from-black/60 to-transparent" />
 
           {/* Top — Brand */}
           <div className="relative z-10 flex items-center gap-2">
