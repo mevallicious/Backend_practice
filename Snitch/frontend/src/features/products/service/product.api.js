@@ -1,0 +1,16 @@
+import axios from "axios"
+
+const productApiInstance = axios.create({
+    baseUrl:"/api/products",
+    withCredentials:true
+})
+
+export async function createproduct(formdata){
+        const response = await productApiInstance.post("/",formdata)
+        return response.data
+}
+
+export async function getSellerProducts(){
+        const response = await productApiInstance.get("/seller")
+        return response.data
+}
