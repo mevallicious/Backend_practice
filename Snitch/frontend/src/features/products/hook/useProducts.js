@@ -48,10 +48,10 @@ export const useProducts = () => {
         dispatch(setProducts(data.products))
     }   
     
-    async function handleGetProductDetails(productId){
+    async function handleProductById(productId){
         const data = await getProductDetails(productId)
         return data.product
     }
 
-    return { handleCreateProduct, handleGetSellerProduct , handleGetAllProducts , handleGetProductDetails};
+    return { handleCreateProduct, handleGetSellerProduct , handleGetAllProducts , handleProductById};
 };
