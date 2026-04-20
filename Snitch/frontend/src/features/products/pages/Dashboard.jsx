@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useProducts } from '../hook/useProducts';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router'; // Correct hook for vite react-router v7 if using, else change to react-router-dom
+import { Link , useNavigate} from 'react-router';
 
 const Dashboard = () => {
     const { handleGetSellerProduct } = useProducts();
@@ -10,6 +10,8 @@ const Dashboard = () => {
     useEffect(() => {
         handleGetSellerProduct();
     }, []);
+
+    const navigate = useNavigate()
 
     return (
         <div className="min-h-screen bg-white text-black font-sans px-6 md:px-12 py-12">
@@ -44,7 +46,9 @@ const Dashboard = () => {
                         {sellerProducts.map(product => (
                             <div key={product._id} className="group cursor-pointer flex flex-col">
                                 {/* Image Container */}
-                                <div className="aspect-4/5 bg-gray-100 overflow-hidden mb-4 relative">
+                                <div onClick={()=>{
+                        navigate(`/seller/product/${product._id}`)
+                    }}  className="aspect-4/5 bg-gray-100 overflow-hidden mb-4 relative">
                                     {product.images?.[0]?.url ? (
                                         <img 
                                             src={product.images[0].url} 

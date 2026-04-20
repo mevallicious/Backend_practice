@@ -49,7 +49,7 @@ const Navbar = () => {
   const navLinks = ['New Arrivals', 'Tees', 'Pants', 'Hoodies', 'Polos', 'Tank Tops', 'Accessories'];
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-14 flex items-center justify-between relative">
+      <div className="max-w-350 mx-auto px-4 md:px-8 h-14 flex items-center justify-between relative">
         <button className="text-gray-700 hover:text-black transition-colors p-1"><SearchIcon /></button>
         <Link to="/" className="absolute left-1/2 -translate-x-1/2">
           <span className="text-xl font-black uppercase tracking-[0.12em] border-2 border-black px-3 py-1 select-none">SNITCH</span>
@@ -59,7 +59,7 @@ const Navbar = () => {
           <button className="hover:text-black transition-colors p-1"><CartIcon /></button>
         </div>
       </div>
-      <nav className="hidden md:flex max-w-[1400px] mx-auto px-8">
+      <nav className="hidden md:flex max-w-350 mx-auto px-8">
         <div className="flex items-center gap-6 py-2.5 text-[13px] font-medium text-gray-600 whitespace-nowrap">
           {navLinks.map((link, i) => (
             <Link key={i} to="#" className="hover:text-black transition-colors pb-2 border-b-2 border-transparent hover:border-gray-400">{link}</Link>
@@ -105,7 +105,7 @@ const ProductDetail = () => {
         const data = await getProductDetails(productId);
         setProduct(data.product);
       } catch (err) {
-        setError('Failed to load product.');
+        setError('Failed to load product.',err);
       } finally {
         setLoading(false);
       }
@@ -143,7 +143,7 @@ const ProductDetail = () => {
     <div className="min-h-screen bg-white font-sans">
       <Navbar />
 
-      <main className="max-w-[1400px] mx-auto px-4 md:px-8 py-10">
+      <main className="max-w-350 mx-auto px-4 md:px-8 py-10">
 
         {/* Breadcrumb */}
         <nav className="text-[11px] text-gray-400 mb-10 font-medium tracking-[0.12em] uppercase flex items-center gap-2">
@@ -190,7 +190,7 @@ const ProductDetail = () => {
             <div className="grid grid-cols-2 gap-3 mb-8">
               {['100% Premium Cotton', 'Oversized Fit', 'Enzyme Washed', 'Drop Shoulder'].map(tag => (
                 <div key={tag} className="flex items-center gap-2 bg-gray-50 border border-gray-100 px-3 py-2.5 rounded-none">
-                  <span className="w-1.5 h-1.5 rounded-full bg-black flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
                   <span className="text-xs font-medium text-gray-700">{tag}</span>
                 </div>
               ))}
@@ -267,7 +267,7 @@ const ProductDetail = () => {
                     'Warm iron if needed.',
                   ].map(item => (
                     <li key={item} className="flex items-start gap-2">
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-black flex-shrink-0" />
+                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-black shrink-0" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -277,9 +277,9 @@ const ProductDetail = () => {
           </div>
 
           {/* ───── RIGHT: Image Gallery ───── */}
-          <div className="lg:w-[400px] xl:w-[460px] flex-shrink-0 order-1 lg:order-2 flex flex-col gap-3">
+          <div className="lg:w-100 xl:w-115 shrink-0 order-1 lg:order-2 flex flex-col gap-3">
             {/* Main image */}
-            <div className="w-full aspect-[4/5] bg-gray-100 overflow-hidden relative group">
+            <div className="w-full aspect-4/5 bg-gray-100 overflow-hidden relative group">
               {images.length > 0 ? (
                 <img
                   src={images[selectedImg]?.url}
@@ -329,7 +329,7 @@ const ProductDetail = () => {
                   <button
                     key={img._id}
                     onClick={() => setSelectedImg(i)}
-                    className={`flex-shrink-0 w-[72px] h-[90px] border-2 overflow-hidden transition-all duration-200 ${
+                    className={`shrink-0 w-18 h-22.5 border-2 overflow-hidden transition-all duration-200 ${
                       selectedImg === i
                         ? 'border-black opacity-100'
                         : 'border-transparent opacity-60 hover:opacity-90 hover:border-gray-300'

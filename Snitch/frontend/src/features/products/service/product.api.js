@@ -24,3 +24,18 @@ export async function getProductDetails(productId){
         const response = await productApiInstance.get(`/detail/${productId}`)
         return response.data
 }
+
+export async function addProductVarient(productId ,newProductVarients){
+
+        const formData =new FormData()
+
+        newProductVarients.images.forEach((image)=>{
+                formData.append("images",image.file)
+        })
+        formData.append("size",newProductVarients.size)
+        formData.append("stock",newProductVarients.stock)
+
+
+        const response = await productApiInstance.post(`/${productId}/variants` , formData)
+        return response.data
+}
