@@ -1,7 +1,6 @@
-import { getSellerProducts, createproduct } from "../service/product.api.js";
+import { getSellerProducts, createproduct ,getAllProducts, getProductDetails } from "../service/product.api.js";
 import { useDispatch } from "react-redux";
-import { setSellerProducts } from "../store/product.slice.js";
-// Assuming you have these actions in your slice
+import { setSellerProducts,setProducts } from "../store/product.slice.js";
 import { setLoading, setError } from "../../auth/store/auth.slice.js"; 
 
 export const useProducts = () => {
@@ -42,8 +41,17 @@ export const useProducts = () => {
         } catch (error) {
             dispatch(setError("Failed to fetch products",error));
         } 
-
     }
 
-    return { handleCreateProduct, handleGetSellerProduct };
+    async function handleGetAllProducts() {
+        const data = await getAllProducts()
+        dispatch(setProducts(data.products))
+    }   
+    
+    async function handleGetProductDetails(productId){
+        const data = await getProductDetails(productId)
+        return data.product
+    }
+
+    return { handleCreateProduct, handleGetSellerProduct , handleGetAllProducts , handleGetProductDetails};
 };
