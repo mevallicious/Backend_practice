@@ -89,20 +89,6 @@ export async function addProductVarient(req,res){
             success:false
         })
     }
-
-    const files = req.files
-    const images= []
-    if(files && files.length > 0){ 
-        (await Promise.all(files.map(async (file)=>{
-            const response = await uploadFile({
-                buffer:file.buffer,
-                fileName:file.originalname
-            })
-            return response
-        }))).map((img)=>{
-            images.push(img)
-        })
-    } 
     
     const stock = req.body.stock
     const size = req.body.size
@@ -111,7 +97,6 @@ export async function addProductVarient(req,res){
     product.variants.push({
         size,
         stock,
-        images,
         category
     })
 
