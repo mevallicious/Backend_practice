@@ -36,10 +36,10 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Home', category: null },
+    { name: 'Jerseys', category: 'jerseys' },
     { name: 'Tees', category: 'tees' },
     { name: 'Pants', category: 'pants' },
     { name: 'Hoodies', category: 'hoodies' },
-    { name: 'Jerseys', category: 'jerseys' },
     { name: 'Polos', category: 'polos' },
     { name: 'Tank Tops', category: 'tanktops' },
   ];
@@ -60,7 +60,7 @@ const Navbar = () => {
         </div>
       ) : (
         <>
-          <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-14 flex items-center justify-between relative">
+          <div className="max-w-350 mx-auto px-4 md:px-8 h-14 flex items-center justify-between relative">
             <button 
               onClick={() => setIsSearchOpen(true)}
               className="text-gray-700 hover:text-black transition-colors p-1"

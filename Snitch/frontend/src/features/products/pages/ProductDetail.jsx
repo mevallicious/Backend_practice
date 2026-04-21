@@ -4,6 +4,9 @@ import { getProductDetails } from '../service/product.api';
 import Navbar from '../components/Navbar';
 import { useCart } from '../../cart/hook/useCart';
 import { useSelector } from 'react-redux';
+import Suggestions from '../components/Suggestions';
+import CustomerReviews from '../components/CustomerReviews';
+import Footer from '../components/Footer';
 
 const CloseIcon = () => (
   <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.2" viewBox="0 0 24 24">
@@ -410,10 +413,16 @@ const ProductDetail = () => {
                 <p className="text-[10px] text-gray-400 mt-0.5">Shipping</p>
               </div>
             </div>
+            
+            <div className="mt-8">
+              <CustomerReviews />
+            </div>
           </div>
 
         </div>
+        <Suggestions category={product?.category} currentProductId={product._id} />
       </main>
+      <Footer />
     </div>
   );
 };
