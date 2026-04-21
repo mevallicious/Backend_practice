@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router';
 import Navbar from '../../products/components/Navbar';
@@ -6,8 +6,11 @@ import Footer from '../../products/components/Footer';
 import { useCart } from '../hook/useCart';
 
 const Cart = () => {
-  const { handleGetCart } = useCart();
+  const { handleGetCart, handleUpdateCartItem, handleRemoveCartItem } = useCart();
   const cartItems = useSelector(state => state.cart.items);
+  
+  // 1. Add state for the custom popup (Toast)
+  const [toastMessage, setToastMessage] = useState(null);
 
   useEffect(() => {
     handleGetCart();
@@ -15,8 +18,30 @@ const Cart = () => {
 
   const total = cartItems?.reduce((acc, item) => acc + (item.price?.amount * item.quantity), 0) || 0;
 
+  // 2. Helper function to show popup and auto-hide it after 3 seconds
+  const showToast = (message) => {
+    setToastMessage(message);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3000);
+  };
+
   return (
-    <div className="min-h-screen bg-white font-sans flex flex-col">
+    <div className="min-h-screen bg-white font-sans flex flex-col relative">
+      
+      {/* 3. The Custom Top-Center Popup */}
+      {toastMessage && (
+        <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[100] bg-black text-white px-6 py-3 shadow-2xl flex items-center gap-4 animate-fade-in-down transition-all">
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-red-400">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span className="text-sm font-semibold tracking-wide">{toastMessage}</span>
+          <button onClick={() => setToastMessage(null)} className="ml-2 text-gray-400 hover:text-white transition-colors">
+            ✕
+          </button>
+        </div>
+      )}
+
       <Navbar />
       
       <main className="flex-1 max-w-[1200px] mx-auto w-full px-6 md:px-12 py-12">
@@ -39,10 +64,9 @@ const Cart = () => {
               {cartItems.map((item, index) => {
                 const product = item.product;
                 const variantId = item.variant;
-                // find variant details if needed (like size/color), but usually backend populates or we find from product.variants
                 const variant = product?.variants?.find(v => v._id === variantId);
                 const size = variant ? variant.size : 'S';
-                const color = variant ? variant.color : 'Black'; // Fallback mapping
+                const color = variant ? variant.color : 'Black';
 
                 return (
                   <div key={index} className="grid grid-cols-12 gap-4 items-center">
@@ -70,11 +94,34 @@ const Cart = () => {
                     {/* Quantity Selector */}
                     <div className="col-span-3 flex items-center justify-center gap-4">
                       <div className="flex items-center border border-gray-300 w-fit h-10">
-                        <button className="w-10 h-full flex justify-center items-center text-gray-500 hover:bg-gray-50 transition-colors">−</button>
+                        <button 
+                          onClick={async () => {
+                            if (item.quantity > 1) {
+                              await handleUpdateCartItem({ productId: product._id, variantId, quantity: item.quantity - 1 });
+                            } else {
+                              await handleRemoveCartItem({ productId: product._id, variantId });
+                            }
+                          }}
+                          className="w-10 h-full flex justify-center items-center text-gray-500 hover:bg-gray-50 transition-colors"
+                        >−</button>
                         <span className="w-10 h-full flex justify-center items-center text-sm font-medium border-x border-gray-300">{item.quantity}</span>
-                        <button className="w-10 h-full flex justify-center items-center text-gray-500 hover:bg-gray-50 transition-colors">+</button>
+                        <button 
+                          onClick={async () => {
+                            const maxStock = variant?.stock || 0;
+                            // 4. Use the custom showToast function instead of alert()
+                            if (item.quantity + 1 > maxStock) {
+                              showToast(`Sorry! Only ${maxStock} items left in stock.`);
+                              return;
+                            }
+                            await handleUpdateCartItem({ productId: product._id, variantId, quantity: item.quantity + 1 });
+                          }}
+                          className="w-10 h-full flex justify-center items-center text-gray-500 hover:bg-gray-50 transition-colors"
+                        >+</button>
                       </div>
-                      <button className="text-gray-400 hover:text-red-500 transition-colors" title="Remove item">
+                      <button 
+                        onClick={() => handleRemoveCartItem({ productId: product._id, variantId })}
+                        className="text-gray-400 hover:text-red-500 transition-colors" title="Remove item"
+                      >
                         <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                           <path d="M3 6h18M19 6l-1 14H6L5 6m4 0V4a2 2 0 012-2h2a2 2 0 012 2v2m-5 5v6m4-6v6"/>
                         </svg>

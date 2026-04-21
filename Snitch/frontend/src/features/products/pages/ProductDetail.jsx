@@ -3,6 +3,13 @@ import { useParams, Link } from 'react-router';
 import { getProductDetails } from '../service/product.api';
 import Navbar from '../components/Navbar';
 import { useCart } from '../../cart/hook/useCart';
+import { useSelector } from 'react-redux';
+
+const CloseIcon = () => (
+  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.2" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
 
 const TruckIcon = () => (
   <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -57,8 +64,9 @@ const ProductDetail = () => {
   const [selectedImg, setSelectedImg] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('');
+  const [showCartPopup, setShowCartPopup] = useState(false);
   const {handleAddItems} = useCart()
-
+  const cartItems = useSelector(state => state.cart?.items || [])
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -100,10 +108,49 @@ const ProductDetail = () => {
   const price = product.price?.amount;
 
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-white font-sans relative">
       <Navbar />
 
-      <main className="max-w-350 mx-auto px-4 md:px-8 py-10">
+      {/* Cart pop-up */}
+      {showCartPopup && (
+        <div className="fixed top-20 right-4 md:right-10 z-50 bg-white border border-gray-200 shadow-[0px_4px_24px_rgba(0,0,0,0.08)] w-[360px] p-6 animate-fade-in-down">
+          <div className="flex items-center justify-between mb-5 pb-4 border-b border-gray-100">
+            <div className="flex items-center gap-2 text-sm text-gray-800 font-medium">
+              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-gray-900">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Item added to your cart
+            </div>
+            <button onClick={() => setShowCartPopup(false)} className="text-gray-400 hover:text-black transition-colors">
+              <CloseIcon />
+            </button>
+          </div>
+          
+          <div className="flex gap-4 mb-6">
+            <div className="w-20 h-28 bg-gray-100 shrink-0">
+              {images[selectedImg]?.url && (
+                <img src={images[selectedImg].url} alt={product.title} className="w-full h-full object-cover" />
+              )}
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-400">URBAN NEEDS</span>
+              <span className="text-sm font-black capitalize leading-snug">{product.title}</span>
+              <span className="text-xs text-gray-500 mt-1">Size: {selectedSize}</span>
+            </div>
+          </div>
+          
+          <div className="flex flex-col gap-3">
+            <Link to="/cart" className="w-full py-3.5 border border-black text-black text-xs font-bold uppercase tracking-[0.1em] text-center hover:bg-gray-50 transition-colors">
+              View cart ({cartItems?.reduce((acc, item) => acc + item.quantity, 0) || 0})
+            </Link>
+            <button onClick={() => setShowCartPopup(false)} className="w-full text-xs font-bold underline tracking-wide text-gray-800 hover:text-black transition-colors py-2 text-center">
+              Continue shopping
+            </button>
+          </div>
+        </div>
+      )}
+
+      <main className="max-w-[1400px] mx-auto px-4 md:px-8 py-10">
 
         {/* Breadcrumb */}
         <nav className="text-[11px] text-gray-400 mb-10 font-medium tracking-[0.12em] uppercase flex items-center gap-2">
@@ -216,7 +263,7 @@ const ProductDetail = () => {
                       variantId: selectedVariant._id,
                       quantity
                     });
-                    alert('Item added to cart!');
+                    setShowCartPopup(true);
                   } catch (err) {
                     alert('Failed to add item to cart.');
                   }

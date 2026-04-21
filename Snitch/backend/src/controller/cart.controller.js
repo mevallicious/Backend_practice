@@ -84,3 +84,45 @@ export async function getCart(req,res){
         cart
     })
 }
+
+export async function updateCartItem(req, res) {
+    const { productId, variantId } = req.params;
+    const { quantity } = req.body;
+
+    if (quantity <= 0) {
+        return removeFromCart(req, res);
+    }
+
+    const stock = await stockOfVariant(productId, variantId);
+
+    if (quantity > stock) {
+        return res.status(400).json({
+            message: `Only ${stock} items available in stock.`,
+            success: false
+        });
+    }
+
+    const cart = await cartModel.findOneAndUpdate(
+        { user: req.user._id, "items.product": productId, "items.variant": variantId },
+        { $set: { "items.$.quantity": quantity } },
+        { new: true }
+    ).populate("items.product");
+
+    if (!cart) {
+        return res.status(404).json({ message: "Item not found in cart", success: false });
+    }
+
+    return res.status(200).json({ message: "Cart updated successfully", success: true, cart });
+}
+
+export async function removeFromCart(req, res) {
+    const { productId, variantId } = req.params;
+
+    const cart = await cartModel.findOneAndUpdate(
+        { user: req.user._id },
+        { $pull: { items: { product: productId, variant: variantId } } },
+        { new: true }
+    ).populate("items.product");
+
+    return res.status(200).json({ message: "Item removed from cart", success: true, cart });
+}

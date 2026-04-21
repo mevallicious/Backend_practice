@@ -15,3 +15,12 @@ export const getCart = async () => {
     return response.data
 }
 
+export const updateCartItemAPI = async ({ productId, variantId, quantity }) => {
+    const response = await cartAPIInstance.put(`/update/${productId}/${variantId}`, { quantity })
+    return response.data
+}
+
+export const removeCartItemAPI = async ({ productId, variantId }) => {
+    const response = await cartAPIInstance.delete(`/remove/${productId}/${variantId}`)
+    return response.data
+}

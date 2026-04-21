@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useProducts } from "../hook/useProducts.js";
+import { Link } from 'react-router'; // 1. Import Link from react-router
 
 const CreateProduct = () => {
   const { handleCreateProduct } = useProducts();
@@ -76,14 +77,24 @@ const CreateProduct = () => {
           </div>
         )}
 
-        {/* Header Section */}
-        <div className="mb-10 text-center md:text-left shrink-0">
-          <h1 className="text-3xl font-extrabold tracking-tight uppercase">
-            Create Product
-          </h1>
-          <p className="text-gray-500 mt-2 text-sm">
-            Add a new catalog item.
-          </p>
+        {/* 2. UPDATED Header Section with Flexbox */}
+        <div className="mb-10 shrink-0 flex flex-col md:flex-row md:items-start justify-between gap-6 text-center md:text-left">
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight uppercase">
+              Create Product
+            </h1>
+            <p className="text-gray-500 mt-2 text-sm">
+              Add a new catalog item.
+            </p>
+          </div>
+          
+          {/* Top Right Dashboard Button */}
+          <Link 
+            to="/seller/dashboard" 
+            className="inline-flex items-center justify-center text-xs font-bold uppercase tracking-widest border border-gray-300 px-6 py-3 hover:border-black transition-colors shrink-0"
+          >
+            ← Back to Dashboard
+          </Link>
         </div>
 
         {/* Form Container */}
