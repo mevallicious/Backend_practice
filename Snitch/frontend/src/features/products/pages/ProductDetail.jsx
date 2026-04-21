@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { getProductDetails } from '../service/product.api';
 import Navbar from '../components/Navbar';
-
+import { useCart } from '../../cart/hook/useCart';
 
 const TruckIcon = () => (
   <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -27,7 +27,6 @@ const ChevronDown = () => (
     <path d="M6 9l6 6 6-6"/>
   </svg>
 );
-
 
 
 /* ─── Accordion Item ────────────────────────────────────────── */
@@ -58,6 +57,7 @@ const ProductDetail = () => {
   const [selectedImg, setSelectedImg] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('');
+  const {handleAddItems} = useCart()
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -205,7 +205,23 @@ const ProductDetail = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col gap-3 mb-10">
-              <button className="w-full py-4 border-2 border-black text-black text-sm font-bold uppercase tracking-[0.15em] hover:bg-gray-50 active:scale-[0.99] transition-all">
+              <button
+                disabled={!selectedSize}
+                onClick={async () => {
+                  try {
+                    const selectedVariant = product?.variants?.find(v => v.size.toUpperCase() === selectedSize.toUpperCase());
+                    if (!selectedVariant) return;
+                    await handleAddItems({ 
+                      productId: product._id,
+                      variantId: selectedVariant._id,
+                      quantity
+                    });
+                    alert('Item added to cart!');
+                  } catch (err) {
+                    alert('Failed to add item to cart.');
+                  }
+                }}
+               className="w-full py-4 border-2 border-black text-black text-sm font-bold uppercase tracking-[0.15em] hover:bg-gray-50 active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                 Add to Cart
               </button>
               <button className="w-full py-4 bg-black text-white text-sm font-bold uppercase tracking-[0.15em] hover:bg-gray-900 active:scale-[0.99] transition-all">

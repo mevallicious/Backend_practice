@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import Search from './Search';
 
+
+import { useSelector } from 'react-redux';
+
 /* ─── Inline SVG Icons ──────────────────────────────────────── */
 const SearchIcon = () => (
   <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -29,6 +32,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const activeCategory = searchParams.get('category');
+  const cartItems = useSelector(state => state.cart?.items || []);
 
   const navLinks = [
     { name: 'Home', category: null },
@@ -71,7 +75,14 @@ const Navbar = () => {
             </Link>
             <div className="flex items-center gap-4 text-gray-700">
               <Link to="/login" className="hover:text-black transition-colors p-1"><UserIcon /></Link>
-              <button className="hover:text-black transition-colors p-1"><CartIcon /></button>
+              <Link to="/cart" className="hover:text-black transition-colors p-1 relative">
+                <CartIcon />
+                {cartItems?.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-black text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+                  </span>
+                )}
+              </Link>
             </div>
           </div>
           <nav className="hidden md:flex max-w-[1400px] w-full mx-auto px-8 overflow-x-auto scrollbar-hide justify-center">

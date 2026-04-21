@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { identifyUser } from "../middleware/auth.middleware.js";
 import { validateAddToCart } from "../validator/cart.validator.js";
-import { getCart } from "../controller/cart.controller.js";
+import { getCart, addToCart } from "../controller/cart.controller.js";
 
 
 const router = Router()
@@ -15,7 +15,7 @@ const router = Router()
  * @argument variantId - Id of the variant to add
  * @argument quantity - Quantity of the item to add (default :1)
  */
-router.post("/add/:productId/:variantId",identifyUser,validateAddToCart)
+router.post("/add/:productId/:variantId",identifyUser,validateAddToCart,addToCart)
 
 
 /**
