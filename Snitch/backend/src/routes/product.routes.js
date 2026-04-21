@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { authenticateSeller } from '../middleware/auth.middleware.js'
-import { createProduct, getAllProducts, getSellerProducts ,getProductDetails, addProductVarient} from '../controller/product.controller.js'
+import { createProduct, getAllProducts, getSellerProducts ,getProductDetails, addProductVarient, updateProductCategory} from '../controller/product.controller.js'
 import multer from 'multer'
 import { createProductValidator } from '../validator/product.validator.js'
 
@@ -50,5 +50,12 @@ router.get("/detail/:id",getProductDetails)
  * @access Private
  */
 router.post("/:id/variants",authenticateSeller , upload.array('images',7), addProductVarient)
+
+/**
+ * @route PUT /api/products/:id/category
+ * @desc Update the category of a product
+ * @access Private (Seller only)
+ */
+router.put("/:id/category", authenticateSeller, updateProductCategory)
 
 export default router

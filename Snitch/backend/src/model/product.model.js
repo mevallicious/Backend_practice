@@ -35,6 +35,10 @@ const productSchema = new mongoose.Schema({
             
         }
     ],
+    category: {
+        type: String,
+        enum: ['tees', 'pants', 'hoodies', 'jerseys', 'polos', 'tanktops'],
+    },
     variants: [
         {
             images:[
@@ -55,6 +59,10 @@ const productSchema = new mongoose.Schema({
                 required: true,
                 min: [0, 'Stock cannot be negative'],
                 default: 0
+            },
+            category: {
+                type: String,
+                enum: ['tees', 'pants', 'hoodies', 'jerseys', 'polos', 'tanktops'],
             }
         }
     ]

@@ -37,7 +37,7 @@ const Login = () => {
           {/* Top — Brand */}
           <div className="relative z-10 flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-white" />
-            <span className="text-xs font-semibold tracking-[0.25em] text-white/80 uppercase">Snitch Apparel</span>
+            <span className="text-xs font-semibold tracking-[0.25em] text-white/80 uppercase">URBAN NEEDS</span>
           </div>
 
           {/* Bottom — Headline */}

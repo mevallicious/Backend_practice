@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { useProducts } from '../hook/useProducts';
 
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
 const StockBadge = ({ n }) => {
   const cfg = n === 0 ? 'bg-red-50 text-red-600 border-red-200'
@@ -14,7 +14,7 @@ const StockBadge = ({ n }) => {
 
 const SellerProductDetails = () => {
   const { productId } = useParams();
-  const { handleProductById, handleAddProductVarient } = useProducts();
+  const { handleProductById, handleAddProductVarient, handleUpdateProductCategory } = useProducts();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,6 +23,7 @@ const SellerProductDetails = () => {
   // Variant form
   const [size, setSize] = useState('');
   const [stock, setStock] = useState('');
+  const [category, setCategory] = useState('');
   const [adding, setAdding] = useState(false);
 
   useEffect(() => {
@@ -52,10 +53,27 @@ const SellerProductDetails = () => {
       await fetchProduct();
       setSize('');
       setStock('');
+      setCategory('');
     } catch (error) {
       console.error("Failed to add variant", error);
     } finally {
       setAdding(false);
+    }
+  };
+
+  const [savingCategory, setSavingCategory] = useState(false);
+  const handleSaveCategory = async (e) => {
+    e.preventDefault();
+    if (!category) return;
+    setSavingCategory(true);
+    try {
+      await handleUpdateProductCategory(productId, category);
+      await fetchProduct(); // re-fetch to get updated product from DB
+      setCategory('');
+    } catch (err) {
+      alert('Failed to save category. Please try again.',err);
+    } finally {
+      setSavingCategory(false);
     }
   };
 
@@ -76,7 +94,7 @@ const SellerProductDetails = () => {
         <div className="flex items-center gap-3 text-sm">
           <Link to="/seller/dashboard" className="text-gray-400 hover:text-black transition-colors">← Dashboard</Link>
           <span className="text-gray-300">/</span>
-          <span className="font-bold text-gray-900 capitalize truncate max-w-[180px]">{product?.title}</span>
+          <span className="font-bold text-gray-900 capitalize truncate max-w-45">{product?.title}</span>
         </div>
         <Link to="/seller/create" className="text-xs font-bold uppercase tracking-widest px-4 py-2 bg-black text-white hover:bg-gray-900 transition-colors">
           + New Product
@@ -87,8 +105,8 @@ const SellerProductDetails = () => {
 
         {/* ── Product Overview ── */}
         <div className="bg-white border border-gray-200 p-6 flex flex-col md:flex-row gap-7">
-          <div className="flex-shrink-0 flex flex-col gap-2">
-            <div className="w-48 aspect-[4/5] bg-gray-100 overflow-hidden">
+          <div className="shrink-0 flex flex-col gap-2">
+            <div className="w-48 aspect-4/5 bg-gray-100 overflow-hidden">
               {product?.images?.[imgIdx]
                 ? <img src={product.images[imgIdx].url} alt={product?.title} className="w-full h-full object-cover" />
                 : <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs uppercase tracking-widest">No Image</div>
@@ -112,7 +130,8 @@ const SellerProductDetails = () => {
             </div>
             <div className="flex flex-wrap gap-6 pt-4 border-t border-gray-100">
               {[
-                { label: 'Price', value: `${product?.price?.Currency} ${Number(product?.price?.amount).toLocaleString('en-IN')}` },
+                { label: 'Price', value: `${product?.price?.Currency || 'INR'} ${Number(product?.price?.amount || 0).toLocaleString('en-IN')}` },
+                { label: 'Category', value: product?.category || 'Uncategorized' },
                 { label: 'Total Stock', value: `${totalStock} units` },
                 { label: 'Variants', value: variants.length },
               ].map(s => (
@@ -176,12 +195,12 @@ const SellerProductDetails = () => {
 
           {/* Add variant form */}
           <form onSubmit={handleAddVariant} className="border-t border-dashed border-gray-200 p-6 bg-gray-50">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-4">Add Variant via API</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-4">Add the Sizes</p>
             <div className="flex flex-wrap gap-3 items-end">
               <div className="flex flex-col gap-1">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Size</label>
                 <select value={size} onChange={e => setSize(e.target.value)}
-                  className="border border-gray-300 bg-white px-3 py-2.5 text-sm font-semibold outline-none focus:border-black appearance-none cursor-pointer min-w-[130px]">
+                  className="border border-gray-300 bg-white px-3 py-2.5 text-sm font-semibold outline-none focus:border-black appearance-none cursor-pointer min-w-32.5">
                   <option value="">Select...</option>
                   {SIZES.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
@@ -197,6 +216,32 @@ const SellerProductDetails = () => {
               </button>
             </div>
           </form>
+
+          {/* Add Category form */}
+          {!product?.category && (
+            <form onSubmit={handleSaveCategory} className="border-t border-dashed border-gray-200 p-6 bg-gray-50">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-4">Add the Category</p>
+              <div className="flex flex-wrap gap-3 items-end">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Category</label>
+                  <select value={category} onChange={e => setCategory(e.target.value)}
+                    className="border border-gray-300 bg-white px-3 py-2.5 text-sm font-semibold outline-none focus:border-black appearance-none cursor-pointer min-w-32.5 capitalize">
+                    <option value="">Select...</option>
+                    <option value="tees">Tees</option>
+                    <option value="pants">Pants</option>
+                    <option value="hoodies">Hoodies</option>
+                    <option value="jerseys">Jerseys</option>
+                    <option value="polos">Polos</option>
+                    <option value="tanktops">Tank Tops</option>
+                  </select>
+                </div>
+                <button type="submit" disabled={!category || savingCategory}
+                  className="px-5 py-2.5 bg-black text-white text-xs font-bold uppercase tracking-widest hover:bg-gray-900 transition-colors disabled:opacity-50">
+                  {savingCategory ? 'Saving...' : '+ Save Category'}
+                </button>
+              </div>
+            </form>
+          )}
         </div>
 
       </main>

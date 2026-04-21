@@ -1,75 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useProducts } from '../hook/useProducts';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router';
-
-/* ─── Inline SVG Icons ──────────────────────────────────────── */
-const SearchIcon = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-  </svg>
-);
-const UserIcon = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-  </svg>
-);
-const CartIcon = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
-  </svg>
-);
-
-/* ─── Navbar ────────────────────────────────────────────────── */
-const Navbar = () => {
-  const navLinks = ['New Arrivals', 'Tees', 'Pants', 'Hoodies', 'Polos', 'Tank Tops', 'Accessories'];
-
-  return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-      {/* Top bar */}
-      <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-14 flex items-center justify-between">
-        {/* Left: Search */}
-        <button className="text-gray-700 hover:text-black transition-colors p-1">
-          <SearchIcon />
-        </button>
-
-        {/* Center: Logo */}
-        <Link to="/" className="absolute left-1/2 -translate-x-1/2">
-          <span className="text-xl font-black uppercase tracking-[0.12em] border-2 border-black px-3 py-1 select-none">
-            SNITCH
-          </span>
-        </Link>
-
-        {/* Right: Account + Cart */}
-        <div className="flex items-center gap-4 text-gray-700">
-          <Link to="/login" className="hover:text-black transition-colors p-1">
-            <UserIcon />
-          </Link>
-          <button className="hover:text-black transition-colors p-1 relative">
-            <CartIcon />
-          </button>
-        </div>
-      </div>
-
-      {/* Nav links */}
-      <nav className="hidden md:flex max-w-[1400px] mx-auto px-8 overflow-x-auto scrollbar-hide">
-        <div className="flex items-center gap-6 py-2.5 text-[13px] font-medium text-gray-700 whitespace-nowrap">
-          {navLinks.map((link, i) => (
-            <Link
-              key={i}
-              to="#"
-              className={`hover:text-black transition-colors pb-2 border-b-2 ${
-                i === 0 ? 'border-black text-black font-semibold' : 'border-transparent'
-              }`}
-            >
-              {link}
-            </Link>
-          ))}
-        </div>
-      </nav>
-    </header>
-  );
-};
+import { Link, useSearchParams } from 'react-router';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 /* ─── Product Card ──────────────────────────────────────────── */
 const ProductCard = ({ product }) => {
@@ -127,10 +61,18 @@ const ProductCard = ({ product }) => {
 const Home = () => {
   const { handleGetAllProducts } = useProducts();
   const products = useSelector(state => state.product.products);
+  const [searchParams] = useSearchParams();
+  const activeCategory = searchParams.get('category');
 
   useEffect(() => {
     handleGetAllProducts();
   }, []);
+
+  const displayProducts = useMemo(() => {
+    if (!products) return [];
+    if (!activeCategory) return products;
+    return products.filter(p => p.category?.toLowerCase() === activeCategory.toLowerCase());
+  }, [products, activeCategory]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -140,15 +82,15 @@ const Home = () => {
         {/* Section heading */}
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-[15px] font-bold uppercase tracking-widest text-black">
-            All Products
+            {activeCategory ? activeCategory : 'All Products'}
           </h2>
           <span className="text-xs text-gray-400 font-medium">
-            {products?.length || 0} items
+            {displayProducts?.length || 0} items
           </span>
         </div>
 
         {/* Grid */}
-        {(!products || products.length === 0) ? (
+        {(!displayProducts || displayProducts.length === 0) ? (
           <div className="flex flex-col items-center justify-center py-40 text-gray-400 gap-3">
             <svg width="36" height="36" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
               <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
@@ -158,12 +100,13 @@ const Home = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-5 md:gap-y-12">
-            {products.map(product => (
+            {displayProducts.map(product => (
               <ProductCard key={product._id} product={product} />
             ))}
           </div>
         )}
       </main>
+      <Footer />
     </div>
   );
 };

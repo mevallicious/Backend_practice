@@ -4,7 +4,7 @@ import { uploadFile } from "../service/storage.service.js";
 
 export async function createProduct(req,res){
 
-    const {title, priceAmount, priceCurrency, description} = req.body 
+    const {title, priceAmount, priceCurrency, description ,category} = req.body 
     const seller = req.user;
 
     const images = await Promise.all(req.files.map(async (file)=>{
@@ -22,7 +22,8 @@ export async function createProduct(req,res){
             currency:priceCurrency || 'INR'
         },
         images,
-        seller:seller._id
+        seller:seller._id,
+        category
     })
 
     res.status(201).json({
@@ -105,11 +106,13 @@ export async function addProductVarient(req,res){
     
     const stock = req.body.stock
     const size = req.body.size
+    const category = req.body.category 
 
     product.variants.push({
         size,
         stock,
-        images
+        images,
+        category
     })
 
     await product.save()
@@ -120,4 +123,30 @@ export async function addProductVarient(req,res){
         product
     })
 
+}
+
+export async function updateProductCategory(req, res) {
+    const productId = req.params.id;
+    const { category } = req.body;
+
+    const product = await productModel.findOne({
+        _id: productId,
+        seller: req.user._id
+    });
+
+    if (!product) {
+        return res.status(404).json({
+            message: "Product not found",
+            success: false
+        });
+    }
+
+    product.category = category;
+    await product.save();
+
+    return res.status(200).json({
+        message: "Product category updated successfully",
+        success: true,
+        product
+    });
 }

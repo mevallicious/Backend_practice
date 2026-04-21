@@ -1,4 +1,4 @@
-import { getSellerProducts, createproduct ,getAllProducts, getProductDetails , addProductVarient } from "../service/product.api.js";
+import { getSellerProducts, createproduct ,getAllProducts, getProductDetails , addProductVarient, updateProductCategory } from "../service/product.api.js";
 import { useDispatch } from "react-redux";
 import { setSellerProducts,setProducts } from "../store/product.slice.js";
 import { setLoading, setError } from "../../auth/store/auth.slice.js"; 
@@ -14,6 +14,7 @@ export const useProducts = () => {
         formData.append("description", productData.description);
         formData.append("priceAmount", productData.priceAmount);
         formData.append("priceCurrency", productData.priceCurrency);
+        formData.append("category", productData.category);
 
         // 2. Append files
         productData.images.forEach((imgObj) => {
@@ -58,6 +59,15 @@ export const useProducts = () => {
         return data
     }
 
+    async function handleUpdateProductCategory(productId, category){
+        try {
+            const data = await updateProductCategory(productId, category);
+            return data;
+        } catch (error) {
+            dispatch(setError(error.response?.data?.message || "Failed to update category"));
+            throw error;
+        }
+    }
 
-    return { handleCreateProduct, handleGetSellerProduct , handleGetAllProducts , handleProductById , handleAddProductVarient};
+    return { handleCreateProduct, handleGetSellerProduct , handleGetAllProducts , handleProductById , handleAddProductVarient, handleUpdateProductCategory};
 };

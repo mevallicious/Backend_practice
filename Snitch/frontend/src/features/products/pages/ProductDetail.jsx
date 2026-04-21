@@ -1,25 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { getProductDetails } from '../service/product.api';
+import Navbar from '../components/Navbar';
 
-/* ─── Icons ─────────────────────────────────────────────────── */
-const SearchIcon = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-  </svg>
-);
-const UserIcon = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-  </svg>
-);
-const CartIcon = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-    <line x1="3" y1="6" x2="21" y2="6"/>
-    <path d="M16 10a4 4 0 0 1-8 0"/>
-  </svg>
-);
+
 const TruckIcon = () => (
   <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
     <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/>
@@ -44,31 +28,7 @@ const ChevronDown = () => (
   </svg>
 );
 
-/* ─── Navbar ────────────────────────────────────────────────── */
-const Navbar = () => {
-  const navLinks = ['New Arrivals', 'Tees', 'Pants', 'Hoodies', 'Polos', 'Tank Tops', 'Accessories'];
-  return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-350 mx-auto px-4 md:px-8 h-14 flex items-center justify-between relative">
-        <button className="text-gray-700 hover:text-black transition-colors p-1"><SearchIcon /></button>
-        <Link to="/" className="absolute left-1/2 -translate-x-1/2">
-          <span className="text-xl font-black uppercase tracking-[0.12em] border-2 border-black px-3 py-1 select-none">SNITCH</span>
-        </Link>
-        <div className="flex items-center gap-4 text-gray-700">
-          <Link to="/login" className="hover:text-black transition-colors p-1"><UserIcon /></Link>
-          <button className="hover:text-black transition-colors p-1"><CartIcon /></button>
-        </div>
-      </div>
-      <nav className="hidden md:flex max-w-350 mx-auto px-8">
-        <div className="flex items-center gap-6 py-2.5 text-[13px] font-medium text-gray-600 whitespace-nowrap">
-          {navLinks.map((link, i) => (
-            <Link key={i} to="#" className="hover:text-black transition-colors pb-2 border-b-2 border-transparent hover:border-gray-400">{link}</Link>
-          ))}
-        </div>
-      </nav>
-    </header>
-  );
-};
+
 
 /* ─── Accordion Item ────────────────────────────────────────── */
 const AccordionItem = ({ title, children }) => {
@@ -97,6 +57,7 @@ const ProductDetail = () => {
   const [error, setError] = useState(null);
   const [selectedImg, setSelectedImg] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [selectedSize, setSelectedSize] = useState('');
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -137,7 +98,6 @@ const ProductDetail = () => {
 
   const images = product.images || [];
   const price = product.price?.amount;
-  const currency = product.price?.Currency;
 
   return (
     <div className="min-h-screen bg-white font-sans">
@@ -153,14 +113,14 @@ const ProductDetail = () => {
         </nav>
 
         {/* ── Main 2-column layout ── */}
-        <div className="flex flex-col lg:flex-row gap-16 xl:gap-24 items-start">
+        <div className="flex flex-col lg:flex-row gap-16 xl:gap-24 items-start justify-center">
 
           {/* ───── LEFT: Info Panel ───── */}
           <div className="flex-1 order-2 lg:order-1 max-w-xl">
 
             {/* Brand tag */}
             <span className="inline-block text-[10px] font-bold uppercase tracking-[0.25em] text-white bg-black px-3 py-1 mb-5">
-              Snitch Apparel
+              Urban Needs
             </span>
 
             {/* Title */}
@@ -177,7 +137,36 @@ const ProductDetail = () => {
                 In Stock
               </span>
             </div>
-            <p className="text-xs text-gray-400 tracking-wide mb-8">{currency} · Inclusive of all taxes · Free shipping on orders above ₹999</p>
+            <p className="text-xs text-gray-500 tracking-wide mb-6">Tax included. <Link to="#" className="underline">Shipping</Link> calculated at checkout.</p>
+
+            {/* Size */}
+            <div className="mb-8">
+              <p className="text-sm font-medium text-gray-900 mb-3">Size</p>
+              <div className="flex flex-wrap gap-3">
+                {['S', 'M', 'L', 'XL'].map(sizeLabel => {
+                  const variant = product?.variants?.find(v => v.size.toUpperCase() === sizeLabel.toUpperCase());
+                  const isOutOfStock = !variant || variant.stock === 0;
+                  const isSelected = selectedSize === sizeLabel;
+
+                  return (
+                    <button
+                      key={sizeLabel}
+                      disabled={isOutOfStock}
+                      onClick={() => setSelectedSize(sizeLabel)}
+                      className={`min-w-12.5 h-11 px-4 flex justify-center items-center rounded-full text-sm font-medium border transition-colors ${
+                        isOutOfStock
+                          ? 'border-gray-200 text-gray-400 opacity-60 cursor-not-allowed line-through'
+                          : isSelected
+                          ? 'border-black bg-black text-white'
+                          : 'border-gray-400 text-gray-800 hover:border-black'
+                      }`}
+                    >
+                      {sizeLabel}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
             {/* Description */}
             {product.description && (

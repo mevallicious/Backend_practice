@@ -9,6 +9,7 @@ const CreateProduct = () => {
     description: '',
     priceAmount: '',
     priceCurrency: 'INR',
+    category: 'tees',
   });
   const [images, setImages] = useState([]);
   const [successMsg, setSuccessMsg] = useState("");
@@ -54,6 +55,7 @@ const CreateProduct = () => {
       description: '',
       priceAmount: '',
       priceCurrency: 'INR',
+      category: 'tees',
     });
     setImages([]);
     
@@ -166,6 +168,34 @@ const CreateProduct = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Category Dropdown */}
+              <div className="space-y-2 lg:col-span-12">
+                <label htmlFor="category" className="block text-xs font-semibold tracking-[0.15em] text-gray-500 uppercase">
+                  Category
+                </label>
+                <div className="relative">
+                  <select
+                    id="category"
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="w-full bg-transparent border-b border-gray-200 py-3 text-lg outline-none transition-colors focus:border-black appearance-none cursor-pointer rounded-none capitalize"
+                  >
+                    <option value="tees">Tees</option>
+                    <option value="pants">Pants</option>
+                    <option value="hoodies">Hoodies</option>
+                    <option value="jerseys">Jerseys</option>
+                    <option value="polos">Polos</option>
+                    <option value="tanktops">Tank Tops</option>
+                  </select>
+                  <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-gray-400">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
                   </div>
                 </div>
               </div>

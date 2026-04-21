@@ -39,3 +39,8 @@ export async function addProductVarient(productId ,newProductVarients){
         const response = await productApiInstance.post(`/${productId}/variants` , formData)
         return response.data
 }
+
+export async function updateProductCategory(productId, category) {
+        const response = await productApiInstance.put(`/${productId}/category`, { category })
+        return response.data
+}
