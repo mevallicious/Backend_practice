@@ -9,6 +9,8 @@ import passport from 'passport'
 import {Strategy as GoogleStrategy} from "passport-google-oauth20"
 import { config } from './config/config.js'
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express()
 
@@ -21,6 +23,7 @@ app.use(cors({
     methods:["GET","POST","PUT","DELETE"],
     credentials:true
 }))
+app.use(express.static(path.join(__dirname, "..", "public")));
 
 app.use(passport.initialize())
 
@@ -35,5 +38,8 @@ passport.use(new GoogleStrategy({
 app.use('/api/auth',authRouter)
 app.use('/api/products',productRouter)
 app.use('/api/cart',cartRouter)
+app.use("*name",(req,res)=>{
+res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+})
 
 export default app 
