@@ -101,7 +101,7 @@ export const googleCallback = async(req,res)=>{
     res.redirect("https://urbanneeds-1tgi.onrender.com/")
 }
 
-export async function getMe(req,res){
+export async function getMe(req,res){   
     const user = req.user
 
     res.status(200).json({
