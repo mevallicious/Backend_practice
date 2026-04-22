@@ -139,7 +139,7 @@ const Register = () => {
 
             {/* Google */}
             <a
-              href="/api/auth/google"
+              href="https://urbanneeds-1tgi.onrender.com/api/auth/google"
               className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-gray-50 py-3 text-sm font-medium text-black transition hover:bg-white hover:border-gray-300 hover:shadow-sm"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24">
