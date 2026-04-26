@@ -39,4 +39,7 @@ router.put("/update/:productId/:variantId", identifyUser, updateCartItem)
  */
 router.delete("/remove/:productId/:variantId", identifyUser, removeFromCart)
 
+
+router.post("/payment/create/order", identifyUser , )
+
 export default router

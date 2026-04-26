@@ -1,6 +1,7 @@
 import cartModel from "../model/cart.model.js";  
 import productModel from "../model/product.model.js";
 import { stockOfVariant } from "../dao/product.dao.js";
+import { createOrder } from "../service/payment.service.js";
 
 export async function addToCart(req,res){
     const {productId ,variantId} = req.params
@@ -125,4 +126,15 @@ export async function removeFromCart(req, res) {
     ).populate("items.product");
 
     return res.status(200).json({ message: "Item removed from cart", success: true, cart });
+}
+
+
+export const createOrderController = (req,res)=>{
+    const user = await createOrder({amount:1000,currency:"INR"})
+
+    return res.status(200).json({
+        message:"Order created successfully",
+        success:true,
+        order
+    })
 }
