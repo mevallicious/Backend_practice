@@ -4,10 +4,13 @@ import { Link } from 'react-router';
 import Navbar from '../../products/components/Navbar';
 import Footer from '../../products/components/Footer';
 import { useCart } from '../hook/useCart';
+import {useRazorpay, RazorpayOrderOptions} from "react-razorpay"
 
 const Cart = () => {
-  const { handleGetCart, handleUpdateCartItem, handleRemoveCartItem } = useCart();
+  const { handleGetCart, handleUpdateCartItem, handleRemoveCartItem, handleCreateCartOrder } = useCart();
   const cartItems = useSelector(state => state.cart.items);
+  const {error , isLoading , Razorpay} = useRazorpay()
+const user = useSelector(state => state.auth.user);
   
   // 1. Add state for the custom popup (Toast)
   const [toastMessage, setToastMessage] = useState(null);
@@ -17,6 +20,59 @@ const Cart = () => {
   }, []);
 
   const total = cartItems?.reduce((acc, item) => acc + (item.price?.amount * item.quantity), 0) || 0;
+
+ async function handleCheckout() {
+    try {
+        // Fetch the order ID from your backend
+        const order = await handleCreateCartOrder();
+        
+        if (!order || !order.id) {
+            showToast("Failed to initiate order. Please try again.");
+            return;
+        }
+
+        const options = {
+            key: "rzp_test_ShlNoOcuA5fmdb", // Consider moving this to your .env file later!
+            amount: order.amount, 
+            currency: order.currency,
+            name: "SNITCH (Urban Needs)", // Updated to match your brand
+            description: "Cart Checkout",
+            order_id: order.id,
+            handler: function (response) {
+                
+                console.log("Payment ID:", response.razorpay_payment_id);
+                console.log("Order ID:", response.razorpay_order_id);
+                console.log("Signature:", response.razorpay_signature);
+                
+                // TODO: Send these 3 variables to your backend to verify the payment
+                alert("Payment Successful! Order Placed.");
+            },
+            prefill: {
+                name: user?.fullname || user?.firstName + " " + user?.lastName,
+                email: user?.email,
+                contact: user?.contact || "9999999999", // Fallback if contact is missing
+            },
+            theme: {
+                color: "#000000",
+            },
+        };
+        
+        const razorpayInstance = new Razorpay(options);
+
+        // 2. ADDED: Handle payment failures cleanly
+        razorpayInstance.on('payment.failed', function (response) {
+            console.error("Payment Failed:", response.error.description);
+            showToast(`Payment failed: ${response.error.description}`);
+        });
+
+        razorpayInstance.open();
+    
+
+    } catch (error) {
+        console.error("Checkout Error:", error);
+        showToast("An error occurred while loading checkout.");
+    }
+}
 
   // 2. Helper function to show popup and auto-hide it after 3 seconds
   const showToast = (message) => {
@@ -159,7 +215,10 @@ const Cart = () => {
                 <p className="text-sm text-gray-500 text-right mb-6 max-w-sm">
                   Tax included. <Link to="#" className="underline text-gray-600">Shipping</Link> and discounts calculated at checkout.
                 </p>
-                <button className="w-full max-w-[300px] bg-black text-white text-[13px] font-bold uppercase tracking-[0.15em] py-4 hover:bg-gray-900 transition-colors active:scale-[0.99]">
+                <button
+                 onClick={handleCheckout}
+                
+                 className="w-full max-w-[300px] bg-black text-white text-[13px] font-bold uppercase tracking-[0.15em] py-4 hover:bg-gray-900 transition-colors active:scale-[0.99]">
                   Check out
                 </button>
               </div>
