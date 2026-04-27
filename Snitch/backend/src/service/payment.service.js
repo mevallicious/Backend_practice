@@ -1,5 +1,5 @@
 import Razorpay from "razorpay"
-import { config } from "../config/config"
+import { config } from "../config/config.js"
 
 const razorpay = new Razorpay({
     key_id:config.RAZORPAY_KEY_ID,
@@ -8,9 +8,11 @@ const razorpay = new Razorpay({
 
 export const createOrder = async (amount,currency = "INR")=>{
     const options ={
-        amount: amount * 100,
+        amount: Math.round(amount * 100), 
         currency
     }
 
-    const order = await razorpay.orders.create(option)
+    const order = await razorpay.orders.create(options)
+
+    return order
 }

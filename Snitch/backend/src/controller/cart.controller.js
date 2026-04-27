@@ -129,12 +129,41 @@ export async function removeFromCart(req, res) {
 }
 
 
-export const createOrderController = (req,res)=>{
-    const user = await createOrder({amount:1000,currency:"INR"})
+export const createOrderController = async (req, res) => {
+    try {
+        // 1. Fetch the user's actual cart from the database
+        const cart = await cartModel.findOne({ user: req.user._id });
 
-    return res.status(200).json({
-        message:"Order created successfully",
-        success:true,
-        order
-    })
-}
+        // 2. Check if cart exists and has items
+        if (!cart || cart.items.length === 0) {
+            return res.status(400).json({ 
+                message: "Cannot create order: Cart is empty", 
+                success: false 
+            });
+        }
+
+        // 3. Calculate the exact total price dynamically
+        let totalAmount = 0;
+        cart.items.forEach(item => {
+            totalAmount += (item.price.amount * item.quantity);
+        });
+
+        // 4. Pass ONLY the number and currency string (NO OBJECT BRACES {})
+        const order = await createOrder(totalAmount, "INR");
+
+        return res.status(200).json({
+            message: "Order created successfully",
+            success: true,
+            order
+        });
+
+    } catch (error) {
+        console.error("Razorpay Error:", error);
+        
+        return res.status(400).json({
+            message: "Failed to create payment order",
+            success: false,
+            error: error.error?.description || error.message
+        });
+    }
+};

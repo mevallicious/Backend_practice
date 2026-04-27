@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { identifyUser } from "../middleware/auth.middleware.js";
 import { validateAddToCart } from "../validator/cart.validator.js";
-import { getCart, addToCart, updateCartItem, removeFromCart } from "../controller/cart.controller.js";
+import { getCart, addToCart, updateCartItem, removeFromCart, createOrderController } from "../controller/cart.controller.js";
 
 
 const router = Router()
@@ -40,6 +40,6 @@ router.put("/update/:productId/:variantId", identifyUser, updateCartItem)
 router.delete("/remove/:productId/:variantId", identifyUser, removeFromCart)
 
 
-router.post("/payment/create/order", identifyUser , )
+router.post("/payment/create/order", identifyUser , createOrderController )
 
 export default router
