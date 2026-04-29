@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import Navbar from '../../products/components/Navbar';
 import Footer from '../../products/components/Footer';
 import { useCart } from '../hook/useCart';
 import {useRazorpay, RazorpayOrderOptions} from "react-razorpay"
-
 const Cart = () => {
-  const { handleGetCart, handleUpdateCartItem, handleRemoveCartItem, handleCreateCartOrder } = useCart();
+  const { handleGetCart, handleUpdateCartItem, handleRemoveCartItem, handleCreateCartOrder , handleVerifyCartOrderPayment } = useCart();
   const cartItems = useSelector(state => state.cart.items);
   const {error , isLoading , Razorpay} = useRazorpay()
+const navigate = useNavigate();
 const user = useSelector(state => state.auth.user);
   
   // 1. Add state for the custom popup (Toast)
@@ -38,15 +38,24 @@ const user = useSelector(state => state.auth.user);
             name: "SNITCH (Urban Needs)", // Updated to match your brand
             description: "Cart Checkout",
             order_id: order.id,
-            handler: function (response) {
-                
-                console.log("Payment ID:", response.razorpay_payment_id);
-                console.log("Order ID:", response.razorpay_order_id);
-                console.log("Signature:", response.razorpay_signature);
-                
-                // TODO: Send these 3 variables to your backend to verify the payment
-                alert("Payment Successful! Order Placed.");
-            },
+            handler: async function (response) {
+          // 🚨 Explicitly map the snake_case from Razorpay to your camelCase variables
+          const paymentData = {
+              razorpay_orderId: response.razorpay_order_id,     // Maps _id to Id
+              razorpay_paymentId: response.razorpay_payment_id, // Maps _id to Id
+              razorpay_signature: response.razorpay_signature
+          };
+
+          // Pass the mapped object
+          const isValid = await handleVerifyCartOrderPayment(paymentData);
+
+          if (isValid) {
+              // Ensure 'navigate' or 'Navigate' matches your router setup
+              navigate(`/order/success?order_id=${response.razorpay_order_id}`);
+          } else {
+              showToast("Payment verification failed. Please contact support.");
+          }
+      },
             prefill: {
                 name: user?.fullname || user?.firstName + " " + user?.lastName,
                 email: user?.email,

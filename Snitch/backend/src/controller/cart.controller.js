@@ -2,6 +2,10 @@ import cartModel from "../model/cart.model.js";
 import productModel from "../model/product.model.js";
 import { stockOfVariant } from "../dao/product.dao.js";
 import { createOrder } from "../service/payment.service.js";
+import paymentModel from "../model/payment.model.js";
+import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils.js";
+import { config } from "../config/config.js";
+import crypto from "crypto";
 
 export async function addToCart(req,res){
     const {productId ,variantId} = req.params
@@ -131,25 +135,31 @@ export async function removeFromCart(req, res) {
 
 export const createOrderController = async (req, res) => {
     try {
-        // 1. Fetch the user's actual cart from the database
         const cart = await cartModel.findOne({ user: req.user._id });
 
-        // 2. Check if cart exists and has items
         if (!cart || cart.items.length === 0) {
-            return res.status(400).json({ 
-                message: "Cannot create order: Cart is empty", 
-                success: false 
-            });
+            return res.status(400).json({ message: "Cart is empty", success: false });
         }
 
-        // 3. Calculate the exact total price dynamically
         let totalAmount = 0;
         cart.items.forEach(item => {
             totalAmount += (item.price.amount * item.quantity);
         });
 
-        // 4. Pass ONLY the number and currency string (NO OBJECT BRACES {})
         const order = await createOrder(totalAmount, "INR");
+
+        
+        await paymentModel.create({
+            user: req.user._id,
+            price: {
+                amount: totalAmount,
+                Currency: "INR"
+            },
+            status: "pending",
+            razorpay: {
+                orderId: order.id
+            }
+        });
 
         return res.status(200).json({
             message: "Order created successfully",
@@ -159,11 +169,73 @@ export const createOrderController = async (req, res) => {
 
     } catch (error) {
         console.error("Razorpay Error:", error);
-        
-        return res.status(400).json({
-            message: "Failed to create payment order",
-            success: false,
-            error: error.error?.description || error.message
-        });
+        return res.status(400).json({ message: "Failed to create payment order", success: false });
     }
 };
+
+export const verifyPayment = async (req, res) => {
+    try {
+        // 1. ACCEPT BOTH FORMATS (This prevents any frontend typo issues!)
+        const razorpay_orderId = req.body.razorpay_orderId || req.body.razorpay_order_id;
+        const razorpay_paymentId = req.body.razorpay_paymentId || req.body.razorpay_payment_id;
+        const razorpay_signature = req.body.razorpay_signature;
+
+        // 2. Log what the frontend actually sent
+        console.log("Verifying Payment Data:", { razorpay_orderId, razorpay_paymentId, razorpay_signature });
+
+        if (!razorpay_orderId || !razorpay_paymentId || !razorpay_signature) {
+            return res.status(400).json({ 
+                message: "Missing Razorpay payment details from frontend", 
+                success: false 
+            });
+        }
+
+        // 3. Find the pending payment
+        const payment = await paymentModel.findOne({ 
+            "razorpay.orderId": razorpay_orderId,
+            status: "pending"
+        });
+
+        if (!payment) {
+            return res.status(400).json({ 
+                message: "Payment order not found in database", 
+                success: false 
+            });
+        }
+
+        // 4. BULLETPROOF SIGNATURE VERIFICATION (Native Node.js approach)
+        const bodyText = razorpay_orderId + "|" + razorpay_paymentId;
+        const expectedSignature = crypto
+            .createHmac("sha256", config.RAZORPAY_KEY_SECRET)
+            .update(bodyText.toString())
+            .digest("hex");
+        
+        const isPaymentValid = expectedSignature === razorpay_signature;
+
+        if (!isPaymentValid) {
+            payment.status = "failed";
+            await payment.save();
+
+            return res.status(400).json({ 
+                message: "Payment verification failed (Invalid Signature)", 
+                success: false 
+            });
+        }
+
+        // 5. Success! Update DB and return
+        payment.status = "paid";
+        payment.razorpay.paymentId = razorpay_paymentId;
+        payment.razorpay.signature = razorpay_signature;
+
+        await payment.save();    
+        
+        return res.status(200).json({
+            message: "Payment verified successfully",
+            success: true
+        });
+
+    } catch (error) {
+        console.error("Verification Server Error:", error);
+        return res.status(500).json({ message: "Server error during verification", success: false });
+    }
+}
